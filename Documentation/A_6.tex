@@ -1,0 +1,311 @@
+\documentclass[13pt,a4paper]{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{yfonts}
+\usepackage{amsfonts}
+\usepackage{enumerate}
+\usepackage{ifpdf}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[small]{caption}
+\usepackage[backref, colorlinks]{hyperref}
+\baselineskip=18pt
+
+%-------- TITLE ------------
+
+\title{Matrix elements}
+\author{Sigurd Askeland}
+%\date{}
+
+\begin{document}
+%
+\maketitle
+
+\begin{abstract}
+    The article Kamta and Bandrauk, Phys. Rev. A 71, 053407 (2005) descibes how to
+    set up the H$_2^+$ problem using prolate spherodal coordinates (PSC). In the
+    appendix, the article writes the formula for general matrix elements in the
+    overlap matrix, S, and the hamiltonian matrix, H. Some of the formulas are
+    written out fully, and are ready to be implemented, but some are only scetches,
+    and additional work is needed to reach an implementable formula. This note shows
+    the additional work on eq. (A6).
+\end{abstract}
+    
+\section{Starting point}
+    Equation (A6) reads
+    \begin{align}
+	h_{\nu',\nu}^{m} = \int_1^{\infty} U_{\nu'}^m(\xi)
+	\left[
+	    \frac{\partial}{\partial \xi}  
+	    \left(
+		(\xi^2 - 1)\frac{\partial}{\partial \xi}	
+	    \right)
+	    - \frac{m^2}{\xi^2 - 1} + 2ZR\xi
+	\right] U_{\nu}^m(\xi)d\xi
+	\label{eq:h}
+    \end{align}
+    The article further supplies a recurrence formula, A(10),
+    \begin{align}
+	\frac{\partial}{\partial \xi}L_{\nu - |m|}^{2|m|}[2\alpha(\xi - 1)] =
+	\notag \\ \frac{\nu - |m| + 1}{\xi - 1}L_{\nu - |m| +
+	\label{eq:rec}
+	1}^{2|m|}[2\alpha(\xi - 1)]- \\ \notag \frac{\nu + |m| + 1 - 2\alpha(\xi
+	- 1)}{\xi - 1}L_{\nu - |m|}^{2|m|}[2\alpha(\xi - 1)]
+    \end{align}
+    with which we can remove the differentiations from (A6), so that a Gauss
+    Laguerre quadrature rule can be applied. Thus we only need the expression
+    for $U_{\nu}^{m}(\xi)$,
+    \begin{align}
+	U_{\nu}^{m}(\xi) = N_{\nu}^m e^{-\alpha(\xi - 1)}(\xi^2 - 1)^{|m|/2}
+	L_{\nu - |m|}^{2|m|}[2\alpha(\xi - 1)]
+	\label{eq:U}
+    \end{align}
+    and the work can begin.
+
+\section{The Work}
+    Let's go straight for the differentiation:
+    \begin{align}
+	\frac{\partial}{\partial \xi}U_{\nu}^{m}(\xi) = 
+	%Product rule
+	N_{\nu}^m e^{-\alpha(\xi - 1)} (\xi^2 - 1)^{|m|/2}
+	\left(
+	    -\alpha 
+	    L_0 + \right. 
+	    %
+	    |m| \frac{\xi}{ \xi^2 - 1}
+	    L_0 + \notag\\ 
+	    %
+	    \left.\notag
+	    \left[
+		\frac{\nu - |m| + 1}{\xi - 1}L_1 - 
+		\frac{\nu + |m| + 1 - 2\alpha(\xi - 1)}{\xi - 1}
+		L_0
+	    \right]
+	\right)\\
+	%
+	= N_{\nu}^m e^{-\alpha(\xi - 1)} (\xi^2 - 1)^{|m|/2}
+	\left[
+	    \left(
+		\alpha - \frac{|m|}{\xi^2 - 1} - \frac{\nu + 1}{\xi - 1}
+	    \right) L_0 + 
+	    \frac{\nu - |m| + 1}{\xi - 1}L_1
+	\right]
+	\label{eq:dU}
+    \end{align}
+    The shorthand $L_i$ for $L_{\nu - |m| + i}^{2|m|}[2\alpha(\xi -
+    1)]$ is introduced to somewhat limit the monstrousness of the expression.
+    
+    Moving on to the double differentiation:
+    \begin{align}
+	\frac{\partial^2}{\partial \xi^2}U_{\nu}^{m}(\xi) = 
+	N_{\nu}^m e^{-\alpha(\xi - 1)} (\xi^2 - 1)^{|m|/2}\times\notag\\
+	\left(
+	    %L_0
+	    \left[
+		\alpha \left(
+		      \alpha 
+		    + \frac{|m|\xi}{\xi^2 - 1} 
+		    - \frac{\nu + |m| + 1}{\xi - 1}
+		\right)	    
+		%
+		\right.\right. \notag \\ \left.\left.
+		%
+		- |m|\left(
+		    \frac{\alpha}{\xi^2 - 1}
+		    - \frac{(\nu + 3)(\xi + 1) + |m| - 2}{(\xi^2 - 1)^2}
+		\right)			    
+		%
+		\right.\right. \notag \\ \left. \left.
+		%
+		- (\nu + 1)\left(
+		      \frac{\alpha}{\xi - 1}
+		    + \frac{|m| - 1}{(\xi - 1)^2}
+		    - \frac{|m|}{(\xi^2 - 1)(\xi - 1)}
+		    - \frac{\nu + |m| + 1}{(\xi - 1)^2}
+		\right)
+	    \right]L_0	    
+	    %
+	    \right. \notag \\ \left.
+	    %
+	    %L_1
+	    +\left[
+		(\nu - |m| + 1) \left(
+		      \frac{\alpha}{\xi - 1}
+		      - \frac{|m|}{(\xi^2 - 1)(\xi - 1)}
+		      - \frac{\nu + 1}{(\xi - 1)^2}
+		      + \frac{\alpha}{\xi - 1}
+			%
+			\right.\right.\right. \notag \\ \left. \left. \left.
+			%
+		      + \frac{|m| - 1}{(\xi - 1)^2}
+		      - \frac{|m|}{(\xi^2 - 1)(\xi - 1)}
+		      - \frac{\nu + |m| + 2}{(\xi - 1)^2}
+		\right)
+	    \right]L_1
+	    %
+	    \right. \notag \\ \left.
+	    %
+	    %L_2
+	    +\left[
+		\frac{(\nu - |m| + 1)(\nu - |m| + 2)}{(\xi - 1)^2}
+	    \right]L_2
+	\right)
+	\label{eq:d2U}
+    \end{align}
+    Some simplification is possible.    
+    \begin{align}
+	\frac{\partial^2}{\partial \xi^2}U_{\nu}^{m}(\xi) = 
+	N_{\nu}^m e^{-\alpha(\xi - 1)} (\xi^2 - 1)^{|m|/2}\times\notag\\
+	\left(
+	    %L_0
+	    \left[
+		  \alpha^2
+		+ \frac{\alpha|m|}{\xi + 1} 
+		- \frac{\alpha(2\nu + |m| + 2)}{\xi - 1}
+		+ \frac{|m|(|m| - 2)}{(\xi^2 - 1)^2}
+		+ \frac{(\nu + 1)(\nu + 2)}{(\xi - 1)^2}
+		+ \frac{2|m|(\nu + 2)}{(\xi^2 - 1)(\xi - 1)}
+	    \right]L_0	    
+	    %
+	    \right. \notag \\ \left.
+	    %
+	    %L_1
+	    +\left[
+		2(\nu - |m| + 1) \left(
+		      \frac{\alpha}{\xi - 1}
+		      - \frac{|m|}{(\xi^2 - 1)(\xi - 1)}
+		      - \frac{\nu + 2}{(\xi - 1)^2}
+		\right)
+	    \right]L_1
+	    %
+	    \right. \notag \\ \left.
+	    %
+	    %L_2
+	    +\left[
+		\frac{(\nu - |m| + 1)(\nu - |m| + 2)}{(\xi - 1)^2}
+	    \right]L_2
+	\right)
+	\label{eq:d2U_II}
+    \end{align}
+   This expression can fortunately be verified numerically.
+   \newline \newline
+   In order to use the Gauss Laguerre quadrature formula, one needs to do a
+   substitution, \newline $X = 2\alpha(\xi - 1)$. 
+   Equation (\ref{eq:U}) will then look like this,
+    \begin{align}
+	U_{\nu}^{m}(X) = N_{\nu}^m e^{-\frac{X}{2}}
+	\left(\frac{X}{2\alpha}\right)^{|m|/2} 
+	\left(\frac{X}{2\alpha} + 2\right)^{|m|/2} 
+	L_{\nu - |m|}^{2|m|}[X]
+	\label{eq:U_X}
+    \end{align}
+
+
+   Equation (\ref{eq:dU}) will look like this,
+    \begin{align}
+	\frac{\partial}{\partial \xi}U_{\nu}^{m}(X) = 
+	N_{\nu}^m e^{-X/2} \left(\frac{X}{2\alpha}\right)^{|m|/2}
+	\left(\frac{X}{2\alpha} + 2\right)^{|m|/2}\times \notag\\
+	\left[	    
+	    \left(
+		\alpha 
+		-
+		\frac{4\alpha^2|m|}{X\left(X
+		+ 4\alpha\right)} 
+		- \frac{2\alpha(\nu + 1)}{X}
+	    \right) L_0 +  
+	    \frac{2\alpha(\nu - |m| + 1)}{X}L_1
+	\right]
+	\label{eq:dU_X}
+    \end{align}
+
+
+    and eq. (\ref{eq:d2U_II}) will look like this
+    
+    
+    \begin{align}
+	\frac{\partial^2}{\partial \xi^2}U_{\nu}^{m}(X) = 	
+	N_{\nu}^m e^{-X/2} \left(\frac{X}{2\alpha}\right)^{|m|/2}
+	\left(\frac{X}{2\alpha} + 2\right)^{|m|/2}\times \notag\\
+	\left(
+	    %L_0
+	    \left[
+		  \alpha^2
+		+ \frac{2\alpha^2|m|}{X + 4\alpha} 
+		- \frac{2\alpha^2(2\nu + |m| + 2)}{X}
+		+ \frac{16\alpha^4|m|(|m| - 2)}{X^2(X+4\alpha)^2}
+		%
+		\right.\right. \notag \\  \left. \left.
+		%
+		+ \frac{4\alpha^2(\nu + 1)(\nu + 2)}{X^2}
+		+ \frac{16\alpha^3|m|(\nu + 2)}{X^2(X+4\alpha)}
+	    \right]L_0	    
+	    %
+	    \right. \notag \\ \left.
+	    %
+	    %L_1
+	    +\left[
+		4\alpha(\nu - |m| + 1) \left(
+		      \frac{\alpha}{X}
+		      - \frac{4\alpha^2|m|}{X^2(X+4\alpha)}
+		      - \frac{2\alpha(\nu + 2)}{X^2}
+		\right)
+	    \right]L_1
+	    %
+	    \right. \notag \\ \left.
+	    %
+	    %L_2
+	    +\left[
+		\frac{4\alpha^2(\nu - |m| + 1)(\nu - |m| + 2)}{X^2}
+	    \right]L_2
+	\right)
+	\label{eq:d2U_X}
+    \end{align}
+    
+    Now all the pieces are in place. Using the substitution, eq. (\ref{eq:h})
+    will end up looking like this,
+    \begin{align}
+	h_{\nu',\nu}^{m} = \frac{1}{2\alpha}\int_0^{\infty} 
+	U_{\nu'}^m
+	\left(
+	    \frac{X}{\alpha} + 2	
+	\right)
+	\frac{\partial U_{\nu}^m}{\partial \xi}
+	\notag\\
+	+
+	U_{\nu'}^m
+	\left(
+	    \frac{X}{2\alpha}	
+	\right)	
+	\left(
+	    \frac{X}{2\alpha} + 2	
+	\right)
+	\frac{\partial^2 U_{\nu}^m}{\partial \xi^2}
+	\\\notag
+	+ 
+	U_{\nu'}^m
+	\left(
+	    2 Z R 
+	    \left[
+		\frac{X}{2\alpha} + 1
+	    \right]
+	    -
+	    \frac{4\alpha^2m^2}{X(X+4\alpha)}
+	\right) 
+	U_{\nu}^m
+	dX
+	\label{eq:h_X}
+    \end{align}
+    where the $1/2\alpha$ in the start is due to the substitution. All the terms
+    in the integrand contain the same exponential function, $e^{-X}$. Factoring
+    this out fulfills the criteria for the Gauss Laguerre quadrature formula.
+    
+
+\end{document}
+
+
+
+

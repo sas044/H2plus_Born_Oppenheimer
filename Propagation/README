@@ -1,0 +1,33 @@
+
+   PROPAGATION OF H2+
+========================
+
+by Sigurd Askeland (sigurd.askeland@gmail.com)
+
+This part of the software package is supposed to propagate the wavefunction,
+using the Hamiltonian matrix created by the programs in the parent directory.
+
+Note
+====
+The programs are not as well documented as those in the parent directory.
+This propagator uses the Python ode solver. It has behaved erratically for me,
+and cannot handle large problems, i.e. > 10 electronic states. For larger
+problems, and more stable propagation, see ../Fortran_propagation/.
+
+Main program
+============
+propagate.py : main program for Born Oppenheimer propagation of H2+.
+
+electronic_propagation :  main program for FNA propagation of H2+.
+
+
+Supporting programs
+===================
+ode_support.py : program for doing the matrix vector multiplication.
+ode_support_parallel.py : program for doing the matrix vector multiplication in
+    ... you guessed it, PARALLEL!
+make_fc_init.py : create an initial state from grid. Needs some supporting data you will
+    have to supply yourself. Not necessary if you start in an eigenstate.
+
+
+

@@ -1,0 +1,39 @@
+
+   FORTRAN PROPAGATION OF H2+
+================================
+
+by Sigurd Askeland (sigurd.askeland@gmail.com)
+
+This part of the software package contains propagation tools written in Fortran,
+for efficiency. That includes an ode solver (not made by me), and a matrix
+vector multiplication scheme. Parallelized in electronic states.
+
+NOTE
+====
+The python scripts in this directory may be lacking good documentation.
+The Makefile may have to be adjusted significantly for your computer. 
+Make sure HDF5 and MPI packages are installed.
+
+Main program
+============
+main.f90 : handles the propagation. 
+
+propagate.py : python script for starting a propagation job on my local
+    supercomputer. May give you the idea.
+
+truncated_propagation.py : python script for starting a propagation job on my local
+    supercomputer. Lets you use a subset of the electronic states in your
+    basis/matrix made by the programs in the parent directory.
+
+Makefile : writing "make" in the terminal should create an executible file based
+    on the fortran code. Be prepared to make changes, as it is made to work on
+    my local supercomputer.
+
+Supporting programs
+===================
+ode.f90 : the ode solver. Not made by me. Credits in the file.
+propagator.f90 : fortran module for the matrix-vector product, and more.
+    Parallelized, HDF5-compatible, pretty fast.
+basis_truncation.py : program for truncating the basis and matrix you made
+    using the programs in the parent directory.
+

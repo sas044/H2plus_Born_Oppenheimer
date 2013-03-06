@@ -1,0 +1,118 @@
+
+   H2+ IN THE BORN OPPENHEIMER APPROXIMATION
+===============================================
+
+by Sigurd Askeland (sigurd.askeland@gmail.com)
+
+
+This software package contains programs for solving the Schrödinger equation
+for H2+ in a laser field, within the Born Oppenheimer approximation. 
+
+The electronic part of the problem is solved using a prolate spheroidal 
+coordinate system. The time independent electronic problem is solved 
+using a basis function representation. This is described in detail in the 
+article 'Kamta and Bandrauk, Phys. Rev. A 71, 053407 (2005)'. 
+The time dependent part is solved in the eigenstate basis.
+
+The vibrational part of the problem is solved using a B-spline basis.
+See the article 
+    "H. Bachau et al. 'Applications of B-splines in atomic and 
+    molecular physics.', Rep. Prog. Phys., 64:1815-1943, 2001."
+
+The code is parallelized, and in well documented python.
+Feel free to copy and change the code. If you make improvements, I would 
+appreciate a copy of the relevant code.
+
+
+Here comes an overview of some of the constituents of the software package,
+those used to set ut the Hamiltonian matrix and the basis functions.
+
+Main program
+============
+main.py : insert all problem parameters here, and press play*. Calls upon the 
+    programs listed below. The result is the full Hamiltonian and overlap matrices,
+    stored to HDF5 files, as well as the eigenstates and energies for analysis.
+    
+    * play means: 
+    $ mpirun -n 20 python main.py
+
+Electronic part
+===============
+electronic_BO.py : the main program for solving the electronic time 
+    independent Schrödinger equation (TISE) for multiple internuclear 
+    distances. Parallelized.
+
+tdse_electron.py : the main program for calculating the dipole couplings for
+    multiple internuclear distances. Parallelized.
+
+--- The two programs above call on the rest of them.
+
+tise_electron.py : sets up the TISE hamiltonian matrix, solves the eigenvalue 
+    problem, and stores the results to file.
+
+psc_basis.py : sets up the prolate spheroidal coordinate basis, including the 
+    overlap matrix.
+
+config.py : class for containing the parameters that uniquely define a basis.
+
+index_iterator.py : class for looping over basis functions.
+
+gausslaguerrequadrature.py : class for solving the 'radial' integrals, or more
+    precisely, the integrals in the 'xi' variable.
+
+
+Vibrational part
+================
+vibrational_BO.py : the main program for calculating the vibrational 
+    eigenstates, as well as the Hamiltonian matrix for the full time dependent
+    H2+ Schrödinger equation. Parallelized.
+
+--- The program above calls the programs below.
+
+vibrational_methods.py : sets up the basis, and calculates and saves the 
+    hamiltonian matrices.
+
+bsplines.py : contains all the good stuff for a B-spline basis.
+
+breakpointsequences.py : support program for bsplines.
+
+gausslegendrequadrature.py : class for solving the integrals in the B-spline 
+    basis.
+
+
+General
+=======
+name_generator.py : assures consistent naming of ... anything, really.
+
+nice_stuff.py : contains misc. small functions that are often useful. 
+
+
+Debugging tools
+===============
+--- These programs are poorly documented, and may be of use only to me.
+test_tdse_electron.py 
+test_tise_electron.py 
+test_psc_basis.py 
+test_vibrational_methods.py
+
+
+Documentation
+=============
+A_6.pdf : shows the steps needed from eq. (A6) in Kamta2005 to implementation.
+A_6.tex : shows the steps needed from eq. (A6) in Kamta2005 to implementation.
+
+
+Propagation
+===========
+Directory containing programs for propagating the Schrödinger Equation.
+
+
+Fortran_propagation
+===================
+Directory containing programs for propagating the Schrödinger Equation fast and
+in parallel for large H2+ problems.
+
+Analysis
+========
+Directory containing programs for analyzing the results of the propagation.
+

@@ -1,0 +1,41 @@
+
+   ANALYSIS OF H2+ WAVEFUNCTION
+==================================
+
+by Sigurd Askeland (sigurd.askeland@gmail.com)
+
+These programs take care of the analysis of wavefunctions created by the rest 
+of this software package.
+
+NOTE
+====
+The choice of basis functions in the electronic system leads to energy curves in
+the continuum that DOES NOT behave as 1/R. This makes the analysis of the
+continuum a somewhat risky business. I recommend using the method
+energy_spectrum_alternative() in analysis.py for energy spectra, and you should
+stick to the close continuum. Use caution. If you solve this problem, please
+share. 
+
+Main program
+============
+analysis.py : contains an analysis class with a pletora of nice methods. Energy
+    spectra, probability densities, animations, state populations, etc.
+
+Supporting programs
+===================
+make_animation.py : creates frames for the animation, with all methods called
+    from analysis.py. 
+mencoder.sh : shell script for making an avi from the frames.
+
+Example
+=======
+>>> from numpy import *
+>>> from pylab import *
+>>> import tables; execfile("analysis.py")
+
+>>> A = Analysis("../Propagation/output/m_0_q_6_xmin_0_50_xmax_18_50_size_464_order_5_trunc_q2_full")
+>>> A.retrieve_result("amplitude_0.01000_omega_0.770_cycles_14_extra_time_0.66.npy")
+
+>>> x,y = A.probability_density(A.psi_final, [61])
+>>> plot(x,y)
+>>> show()
